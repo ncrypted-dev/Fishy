@@ -52,7 +52,7 @@ namespace Fishy.Utils
             if (_random.NextSingle() < 0.01f && _random.NextSingle() < 0.25)
                 type = "void_portal";
 
-            switch(type)
+            switch (type)
             {
                 case "none":
                     return;
@@ -70,7 +70,7 @@ namespace Fishy.Utils
                 case "void_portal":
                     SpawnVoidPortal();
                     break;
-            }          
+            }
         }
 
         public static void SpawnFish(string type = "fish_spawn")
@@ -80,35 +80,46 @@ namespace Fishy.Utils
             new ActorSpawnPacket(type, pos, id).SendPacket("all", (int)CHANNELS.GAME_STATE);
             Fishy.Actors.Add(new Actor(id, type, pos));
             if (type != "fish_spawn")
-                new ActorRemovePacket(id) { Action = "_ready"}.SendPacket("all", (int)CHANNELS.GAME_STATE);
+                new ActorRemovePacket(id) { Action = "_ready" }.SendPacket("all", (int)CHANNELS.GAME_STATE);
         }
 
         public static void SpawnRainCloud()
         {
             int id = _random.Next();
             Vector3 pos = new(_random.Next(-100, 150), 42f, _random.Next(-150, 100));
-            new ActorSpawnPacket("raincloud", pos, id).SendPacket("all", (int)CHANNELS.GAME_STATE);
-            Fishy.Actors.Add(new RainCloud(id, pos));
+            SpawnActor(new RainCloud(id, pos));
         }
 
         public static void SpawnMetalSpot()
         {
             int id = _random.Next();
-            Vector3 pos =  Fishy.World.TrashPoints[_random.Next(Fishy.World.TrashPoints.Count)];
+            Vector3 pos = Fishy.World.TrashPoints[_random.Next(Fishy.World.TrashPoints.Count)];
 
             if (_random.NextSingle() < .15f)
                 pos = Fishy.World.ShorelinePoints[_random.Next(Fishy.World.ShorelinePoints.Count)];
 
-            new ActorSpawnPacket("metal_spawn", pos, id).SendPacket("all", (int)CHANNELS.GAME_STATE);
-            Fishy.Actors.Add(new Actor(id, "metal_spawn", pos));
+            SpawnActor(new Actor(id, "metal_spawn", pos));
         }
 
         public static void SpawnVoidPortal()
         {
             int id = _random.Next();
             Vector3 pos = Fishy.World.HiddenSpots[_random.Next(Fishy.World.HiddenSpots.Count)];
-            new ActorSpawnPacket("void_portal", pos, id).SendPacket("all", (int)CHANNELS.GAME_STATE);
-            Fishy.Actors.Add(new Actor(id, "void_portal", pos));
+            SpawnActor(new Actor(id, "void_portal", pos));
+        }
+
+        public static void SpawnActor(Actor actor)
+        {
+            new ActorSpawnPacket(actor.Type, actor.Position, actor.InstanceID).SendPacket("all", (int)CHANNELS.GAME_STATE);
+            Fishy.Actors.Add(actor);
+            if (actor.Rotation == default)
+                return;
+            new ActorUpdatePacket(actor.InstanceID, actor.Position, actor.Rotation).SendPacket("all", (int)CHANNELS.GAME_STATE);
+
+        }
+        public static void SpawnActor(int ID, string Type, Vector3 position, Vector3 entRot = default)
+        {
+            SpawnActor( new Actor(ID, Type, position, entRot));
         }
     }
 }
