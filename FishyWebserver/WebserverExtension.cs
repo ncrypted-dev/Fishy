@@ -1,6 +1,4 @@
 ﻿using Fishy.Extensions;
-using Fishy.Models;
-using Fishy.Utils;
 
 namespace Fishy.Webserver
 {
@@ -12,13 +10,21 @@ namespace Fishy.Webserver
             => GetConfigValue("webserver")["username"].ToString() ?? "";
         public static string GetPassword()
             => GetConfigValue("webserver")["password"].ToString() ?? "";
-        public override void OnChatMessage(ChatMessage message)
-            => dashboard.MessageToSync.Add(message);
-        public override void OnPlayerJoin(Player player)
-            => dashboard.PlayersToSync.TryAdd(player, "join");
-        public override void OnPlayerLeave(Player player)
-            => dashboard.PlayersToSync.TryAdd(player, "leave");
+        public static void OnChatMessage(object? sender, Event.Events.ChatMessageEventArgs args)
+            => dashboard.MessageToSync.Add(args.ChatMessage);
+        public static void OnPlayerJoin(object? sender,Event.Events.PlayerJoinEventArgs args)
+            => dashboard.PlayersToSync.TryAdd(args.Player, "join");
+        public static void OnPlayerLeave(object? sender, Event.Events.PlayerLeaveEventArgs args)
+            => dashboard.PlayersToSync.TryAdd(args.Player, "leave");
         public override void OnInit()
-            => dashboard.Initalize();
+        { 
+            dashboard.Initalize();
+
+            // Subscribe to events
+            Event.EventManager.OnChatMessage += OnChatMessage;
+            Event.EventManager.OnPlayerJoin += OnPlayerJoin;
+            Event.EventManager.OnPlayerLeave += OnPlayerLeave;
+
+        }
     }
 }

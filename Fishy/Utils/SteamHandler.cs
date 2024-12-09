@@ -62,11 +62,12 @@ namespace Fishy.Utils
             UpdatePlayerCount();
             Player player = new(userJoining.Id, userJoining.Name);
 
-            foreach (FishyExtension e in Fishy.Extensions)
-                e.OnPlayerJoin(player);
-
             Console.WriteLine(DateTime.Now.ToString("dd.MM HH:mm:ss") + $" A Player Joined: {userJoining.Name}");
+
             Fishy.Players.Add(player);
+
+            Event.EventManager.RaiseEvent(new Event.Events.PlayerJoinEventArgs(player));
+
             Console.Title = $"Fishy Server - There are currently {Fishy.Players.Count} Players playing";
         }
 
@@ -75,8 +76,7 @@ namespace Fishy.Utils
             UpdatePlayerCount();
             Console.WriteLine(DateTime.Now.ToString("dd.MM HH:mm:ss") + $" A Player Left: {userLeaving.Name}");
 
-            foreach (FishyExtension e in Fishy.Extensions)
-                e.OnPlayerLeave(Fishy.Players.First(player => player.SteamID.Equals(userLeaving.Id)));
+            Event.EventManager.RaiseEvent(new Event.Events.PlayerLeaveEventArgs(Fishy.Players.First(player => player.SteamID.Equals(userLeaving.Id))));
 
             Fishy.Players.RemoveAll(player => player.SteamID.Equals(userLeaving.Id));
             Console.Title = $"Fishy Server - There are currently {Fishy.Players.Count} Players playing";

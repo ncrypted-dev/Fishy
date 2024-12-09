@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using Fishy.Extensions;
 using Fishy.Utils;
 using Steamworks;
 
@@ -21,8 +20,7 @@ namespace Fishy.Models.Packets
             if (target != "all") return;
             ChatMessage chatMessage = new(SteamClient.SteamId, Message);
             ChatLogger.Log(chatMessage);
-            foreach (FishyExtension ex in Fishy.Extensions)
-                ex.OnChatMessage(chatMessage);
+            Event.EventManager.RaiseEvent(new Event.Events.ChatMessageEventArgs(SteamClient.SteamId, Message));
         }
     }
 

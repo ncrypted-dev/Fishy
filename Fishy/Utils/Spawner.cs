@@ -112,13 +112,17 @@ namespace Fishy.Utils
             new ActorSpawnPacket(actor.Type, actor.Position, actor.InstanceID).SendPacket("all", (int)CHANNELS.GAME_STATE);
             if (!Fishy.Actors.Contains(actor))
                 Fishy.Actors.Add(actor);
+            Event.EventManager.RaiseEvent(new Event.Events.ActorSpawnEventArgs(actor));
             if (actor.Rotation == default)
                 return;
             new ActorUpdatePacket(actor.InstanceID, actor.Position, actor.Rotation).SendPacket("all", (int)CHANNELS.GAME_STATE);
 
         }
-
         public static Actor SpawnActor(ActorType type, Vector3 position, Vector3 entRot = default)
+        {
+            return SpawnActor(type.ToString().ToLower(), position, entRot);
+        }
+        public static Actor SpawnActor(string type, Vector3 position, Vector3 entRot = default)
         {
             var actor = new Actor(GetFreeId(), type, position, entRot);
             SpawnActor(actor);
@@ -128,6 +132,7 @@ namespace Fishy.Utils
         public static void RemoveActor(Actor actor)
         {
             new ActorRemovePacket(actor.InstanceID).SendPacket("all", (int)CHANNELS.GAME_STATE);
+            Event.EventManager.RaiseEvent(new Event.Events.ActorDespawnEventArgs(actor));
             Fishy.Actors.Remove(actor);
         }
 
