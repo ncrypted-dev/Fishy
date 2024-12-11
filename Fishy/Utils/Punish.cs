@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Fishy.Models;
+﻿using Fishy.Models;
 using Fishy.Models.Packets;
+using Steamworks;
 
 namespace Fishy.Utils
 {
@@ -22,5 +18,11 @@ namespace Fishy.Utils
 
         internal static void KickPlayer(Player playerToKick)
             => new KickPacket().SendPacket("single", (int)CHANNELS.GAME_STATE, playerToKick.SteamID);
+
+        internal static bool IsBanned(SteamId id)
+        {
+            return Fishy.BannedUsers.Contains(id.Value.ToString());
+        }
+        
     }
 }

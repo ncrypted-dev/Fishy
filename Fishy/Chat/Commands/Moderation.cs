@@ -19,7 +19,9 @@ namespace Fishy.Chat.Commands
             Console.WriteLine("Server was halted by " + executor);
 
             new ServerClosePacket().SendPacket("all", (int)CHANNELS.GAME_STATE);
-
+            Fishy.SteamHandler.Lobby.SetJoinable(false); // Prevent takeover of lobby
+            foreach (var pl in Fishy.Players) // Kick all players
+                Punish.KickPlayer(pl);
             Fishy.SteamHandler.Lobby.Leave();
             Environment.Exit(0);
         }

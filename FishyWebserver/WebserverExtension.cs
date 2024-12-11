@@ -10,11 +10,11 @@ namespace Fishy.Webserver
             => GetConfigValue("webserver")["username"].ToString() ?? "";
         public static string GetPassword()
             => GetConfigValue("webserver")["password"].ToString() ?? "";
-        public static void OnChatMessage(object? sender, Event.Events.ChatMessageEventArgs args)
+        public static void OnChatMessage(object? sender, Event.EventArgs.ChatMessageEventArgs args)
             => dashboard.MessageToSync.Add(args.ChatMessage);
-        public static void OnPlayerJoin(object? sender,Event.Events.PlayerJoinEventArgs args)
+        public static void OnPlayerJoin(object? sender,Event.EventArgs.PlayerJoinEventArgs args)
             => dashboard.PlayersToSync.TryAdd(args.Player, "join");
-        public static void OnPlayerLeave(object? sender, Event.Events.PlayerLeaveEventArgs args)
+        public static void OnPlayerLeave(object? sender, Event.EventArgs.PlayerLeaveEventArgs args)
             => dashboard.PlayersToSync.TryAdd(args.Player, "leave");
         public override void OnInit()
         { 

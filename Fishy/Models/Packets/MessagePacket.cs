@@ -20,7 +20,7 @@ namespace Fishy.Models.Packets
             if (target != "all") return;
             ChatMessage chatMessage = new(SteamClient.SteamId, Message);
             ChatLogger.Log(chatMessage);
-            Event.EventManager.RaiseEvent(new Event.Events.ChatMessageEventArgs(SteamClient.SteamId, Message));
+            Event.EventManager.RaiseEvent(new Event.EventArgs.ChatMessageEventArgs(SteamClient.SteamId, Message));
         }
     }
 

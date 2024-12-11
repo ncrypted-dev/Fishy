@@ -29,7 +29,7 @@ namespace Fishy.Models
         public Vector3 Rotation { get; set; }
 
         public int DespawnTime { get; set; }  = -1;
-        public bool Despawn { get; set; }  = true;
+        public bool Despawn { get; set; }  = false;
 
         public Actor(int ID, ActorType type, Vector3 position, Vector3 entRot = default)
         {

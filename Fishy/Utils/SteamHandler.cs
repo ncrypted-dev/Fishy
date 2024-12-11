@@ -1,5 +1,4 @@
-﻿using Fishy.Extensions;
-using Fishy.Models;
+﻿using Fishy.Models;
 using Steamworks;
 using Steamworks.Data;
 
@@ -59,6 +58,11 @@ namespace Fishy.Utils
 
         void SteamMatchmaking_OnLobbyMemberJoined(Lobby Lobby, Friend userJoining)
         {
+            // Try to stop spammers from spam joining, spammer get scammed!
+            foreach (var pl in Fishy.Players)
+                if (pl.SteamID == userJoining.Id) return;
+            if (Punish.IsBanned(userJoining.Id)) // Well, that's the best I can do
+                return;
             UpdatePlayerCount();
             Player player = new(userJoining.Id, userJoining.Name);
 
@@ -66,7 +70,7 @@ namespace Fishy.Utils
 
             Fishy.Players.Add(player);
 
-            Event.EventManager.RaiseEvent(new Event.Events.PlayerJoinEventArgs(player));
+            Event.EventManager.RaiseEvent(new Event.EventArgs.PlayerJoinEventArgs(player));
 
             Console.Title = $"Fishy Server - There are currently {Fishy.Players.Count} Players playing";
         }
@@ -76,7 +80,7 @@ namespace Fishy.Utils
             UpdatePlayerCount();
             Console.WriteLine(DateTime.Now.ToString("dd.MM HH:mm:ss") + $" A Player Left: {userLeaving.Name}");
 
-            Event.EventManager.RaiseEvent(new Event.Events.PlayerLeaveEventArgs(Fishy.Players.First(player => player.SteamID.Equals(userLeaving.Id))));
+            Event.EventManager.RaiseEvent(new Event.EventArgs.PlayerLeaveEventArgs(Fishy.Players.First(player => player.SteamID.Equals(userLeaving.Id))));
 
             Fishy.Players.RemoveAll(player => player.SteamID.Equals(userLeaving.Id));
             Console.Title = $"Fishy Server - There are currently {Fishy.Players.Count} Players playing";
@@ -84,6 +88,7 @@ namespace Fishy.Utils
 
         void SteamMatchmaking_OnP2PSessionRequest(SteamId id)
         {
+            if (Punish.IsBanned(id)) return;
             if (Lobby.Members.Any(player => player.Id.Value.Equals(id)))
                 SteamNetworking.AcceptP2PSessionWithUser(id);
         }
